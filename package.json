@@ -9,7 +9,7 @@
   "author": "Simon Kusterer",
   "license": "MIT",
   "dependencies": {
-    "castv2-client": "0.0.4",
+    "castv2-client": "0.0.5",
     "mdns": "^2.2.0",
     "when": "^3.4.5",
     "xtend": "^4.0.0"
@@ -19,7 +19,10 @@
     "url": "git@github.com:xat/chromecast-player.git"
   },
   "keywords": [
-    "chromecast", "media", "player", "video"
+    "chromecast",
+    "media",
+    "player",
+    "video"
   ],
   "bugs": {
     "url": "https://github.com/xat/chromecast-player/issues"
