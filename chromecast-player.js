@@ -74,7 +74,7 @@ var loadMedia = function(player, opts) {
 // boot the player
 var player = mutate(function(opts) {
   var options = extend(defaults, opts);
-  return findDevice(options.device, options.ttl)
+  var proc = findDevice(options.device, options.ttl)
     .then(function(service) {
       return connectClient(service);
     })
@@ -84,6 +84,16 @@ var player = mutate(function(opts) {
     .then(function(player) {
       return loadMedia(player, options)
     });
+
+  if (!opts.cb) return proc;
+
+  // use the callback provided
+  return proc.then(function(player) {
+      opts.cb(null, player);
+    })
+    .catch(function(err) {
+      opts.cb(err);
+    });
 });
 
 // create a nice API
@@ -91,8 +101,16 @@ player.method(['string'], function(done, path) {
   return done({ path: path });
 });
 
+player.method(['string', 'function'], function(done, path, cb) {
+  return done({ path: path, cb: cb });
+});
+
 player.method(['string', 'object'], function(done, path, opts) {
   return done(extend({ path: path }, opts));
+});
+
+player.method(['string', 'object', 'function'], function(done, path, opts, cb) {
+  return done(extend({ path: path, cb: cb }, opts));
 });
 
 player.method(['string', 'string'], function(done, path, type) {
@@ -101,6 +119,10 @@ player.method(['string', 'string'], function(done, path, type) {
 
 player.method(['string', 'object'], function(done, path, type, opts) {
   return done(extend({ type: type, path: path }, opts));
+});
+
+player.method(['string', 'object', 'function'], function(done, path, type, opts, cb) {
+  return done(extend({ type: type, path: path, cb: cb }, opts));
 });
 
 module.exports = player.close();

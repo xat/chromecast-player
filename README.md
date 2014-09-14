@@ -20,6 +20,13 @@ player(media);
 player(media, 'video/mp4');
 
 // stop playback after 5 seconds
+player(media, function(err, player) {
+    setTimeout(function() {
+        player.stop();
+    }, 5000);
+});
+
+// ..doing the same using promises
 player(media)
     .then(function(player) {
         setTimeout(function() {
