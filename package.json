@@ -13,5 +13,16 @@
     "mdns": "^2.2.0",
     "when": "^3.4.5",
     "xtend": "^4.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:xat/chromecast-player.git"
+  },
+  "keywords": [
+    "chromecast", "media", "player", "video"
+  ],
+  "bugs": {
+    "url": "https://github.com/xat/chromecast-player/issues"
+  },
+  "homepage": "https://github.com/xat/chromecast-player"
 }
