@@ -1,4 +1,4 @@
-# finance-stream
+# chromecast-player
 
 simple chromecast player.
 
