@@ -99,7 +99,7 @@ player.method(['string', 'string'], function(done, path, type) {
   return done({ type: type, path: path });
 });
 
-player.method(['string', 'string'], function(done, path, type, opts) {
+player.method(['string', 'object'], function(done, path, type, opts) {
   return done(extend({ type: type, path: path }, opts));
 });
 
