@@ -121,11 +121,11 @@ player.method(['string', 'string', 'function'], function(done, path, type, cb) {
   return done({ type: type, path: path, cb: cb });
 });
 
-player.method(['string', 'object'], function(done, path, type, opts) {
+player.method(['string', 'string', 'object'], function(done, path, type, opts) {
   return done(extend({ type: type, path: path }, opts));
 });
 
-player.method(['string', 'object', 'function'], function(done, path, type, opts, cb) {
+player.method(['string', 'string', 'object', 'function'], function(done, path, type, opts, cb) {
   return done(extend({ type: type, path: path, cb: cb }, opts));
 });
 
