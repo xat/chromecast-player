@@ -1,6 +1,6 @@
 {
   "name": "chromecast-player",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "simple chromecast player",
   "main": "chromecast-player.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "castv2-client": "0.0.5",
     "mdns": "^2.2.0",
+    "mutate.js": "^0.2.0",
     "when": "^3.4.5",
     "xtend": "^4.0.0"
   },

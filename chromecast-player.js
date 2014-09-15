@@ -97,13 +97,8 @@ var player = mutate(function(opts) {
 });
 
 // create a nice API
-player.method(['string'], function(done, path) {
-  return done({ path: path });
-});
-
-player.method(['string', 'function'], function(done, path, cb) {
-  return done({ path: path, cb: cb });
-});
+player.method(['string'], ['path']);
+player.method(['string', 'function'], ['path', 'cb']);
 
 player.method(['string', 'object'], function(done, path, opts) {
   return done(extend({ path: path }, opts));
@@ -113,13 +108,8 @@ player.method(['string', 'object', 'function'], function(done, path, opts, cb) {
   return done(extend({ path: path, cb: cb }, opts));
 });
 
-player.method(['string', 'string'], function(done, path, type) {
-  return done({ type: type, path: path });
-});
-
-player.method(['string', 'string', 'function'], function(done, path, type, cb) {
-  return done({ type: type, path: path, cb: cb });
-});
+player.method(['string', 'string'], ['path', 'type']);
+player.method(['string', 'string', 'function'], ['path', 'type', 'cb']);
 
 player.method(['string', 'string', 'object'], function(done, path, type, opts) {
   return done(extend({ type: type, path: path }, opts));
