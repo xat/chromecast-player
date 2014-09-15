@@ -74,6 +74,12 @@ var loadMedia = function(player, opts) {
 // boot the player
 var player = mutate(function(opts) {
   var options = extend(defaults, opts);
+
+  if (opts._opts) {
+    options = extend(options, opts._opts);
+    delete opts._opts;
+  }
+
   var proc = findDevice(options.device, options.ttl)
     .then(function(service) {
       return connectClient(service);
@@ -97,26 +103,14 @@ var player = mutate(function(opts) {
 });
 
 // create a nice API
-player.method(['string'], ['path']);
-player.method(['string', 'function'], ['path', 'cb']);
-
-player.method(['string', 'object'], function(done, path, opts) {
-  return done(extend({ path: path }, opts));
-});
-
-player.method(['string', 'object', 'function'], function(done, path, opts, cb) {
-  return done(extend({ path: path, cb: cb }, opts));
-});
-
-player.method(['string', 'string'], ['path', 'type']);
-player.method(['string', 'string', 'function'], ['path', 'type', 'cb']);
-
-player.method(['string', 'string', 'object'], function(done, path, type, opts) {
-  return done(extend({ type: type, path: path }, opts));
-});
-
-player.method(['string', 'string', 'object', 'function'], function(done, path, type, opts, cb) {
-  return done(extend({ type: type, path: path, cb: cb }, opts));
-});
+player
+  .method(['string'], ['path'])
+  .method(['string', 'function'], ['path', 'cb'])
+  .method(['string', 'object'], ['path', '_opts'])
+  .method(['string', 'object', 'function'], ['path', '_opts', 'cb'])
+  .method(['string', 'string'], ['path', 'type'])
+  .method(['string', 'string', 'function'], ['path', 'type', 'cb'])
+  .method(['string', 'string', 'object'], ['path', 'type', '_opts'])
+  .method(['string', 'string', 'object', 'function'], ['path', 'type', '_opts', 'cb']);
 
 module.exports = player.close();
