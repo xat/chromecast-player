@@ -62,7 +62,8 @@ var loadMedia = function(player, opts) {
     var media = {
       contentId: opts.path,
       contentType: opts.type,
-      streamType: opts.streamType || 'BUFFERED'
+      streamType: opts.streamType || 'BUFFERED',
+      metadata: opts.metadata
     };
     player.load(media, { autoplay: opts.autoplay }, function(err) {
       if (err) return reject(err);
