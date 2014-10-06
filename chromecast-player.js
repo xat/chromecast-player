@@ -105,6 +105,7 @@ var player = mutate(function(opts) {
 
 // create a nice API
 player
+  .method(['object', 'function'], ['_opts', 'cb'])
   .method(['string'], ['path'])
   .method(['string', 'function'], ['path', 'cb'])
   .method(['string', 'object'], ['path', '_opts'])
