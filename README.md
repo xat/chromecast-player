@@ -67,6 +67,31 @@ player({
   // meta data like the title or an cover image
   metadata: { title: 'my awesome homevideo..' },
 
+}, function(err, p) {
+  // p is an instance which allows us to control
+  // the playback.
+
+  p.pause(); // pause playback
+  p.play(); // start playing again
+  p.stop(); // stop playback
+  p.seek(100); // jump to 100 seconds
+
+  // all those methods also accept callbacks like this:
+  p.pause(function(err, status) {
+    if (err) return console.log('could not pause :(');
+  });
+
+  // fetch the current playback status
+  p.getStatus(function(err, status) {
+    console.log('current status', status.playerState);
+    console.log('video duration', status.media.duration);
+  });
+
+  // or you can define a status listener
+  p.on('status', function(status) {
+    console.log('current status', status.playerState);
+  });
+
 });
 
 ```
