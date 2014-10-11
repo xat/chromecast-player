@@ -1,13 +1,14 @@
 var castvs2Cli = require('castv2-client');
 var Client = castvs2Cli.Client;
 var DefaultMediaReceiver = castvs2Cli.DefaultMediaReceiver;
-var mdns = require('mdns');
+var scanner = require('chromecast-scanner');
 var mutate = require('mutate.js');
 var extend = require('xtend');
 var promise = require('when').promise;
 
 var defaults = {
-  autoplay: true
+  autoplay: true,
+  streamType: 'BUFFERED'
 };
 
 // find chromecast devices in the network and
@@ -15,19 +16,12 @@ var defaults = {
 // which matches deviceName.
 var findDevice = function(deviceName, ttl) {
   return promise(function(resolve, reject) {
-    var scanner = mdns.createBrowser(mdns.tcp('googlecast'));
-    if (!ttl) ttl = 10000; // default to 10 seconds
-    var timer = setTimeout(function() {
-      scanner.stop();
-      reject('device not found');
-    }, ttl);
-    scanner.on('serviceUp', function(service) {
-      if (deviceName && deviceName !== service.name) return;
-      resolve(service);
-      scanner.stop();
-      clearTimeout(timer);
-    });
-    scanner.start();
+    scanner({ device: deviceName, ttl: ttl },
+      function(err, service) {
+        if (err) return reject(err);
+        return resolve(service);
+      }
+    );
   });
 };
 
@@ -35,7 +29,7 @@ var findDevice = function(deviceName, ttl) {
 var connectClient = function(service) {
   return promise(function(resolve, reject) {
     var client = new Client();
-    client.connect(service.addresses[0], function() {
+    client.connect(service.address, function() {
       // TODO: handle errorcase here
       resolve(client);
     });
@@ -62,7 +56,7 @@ var loadMedia = function(player, opts) {
     var media = {
       contentId: opts.path,
       contentType: opts.type,
-      streamType: opts.streamType || 'BUFFERED',
+      streamType: opts.streamType,
       metadata: opts.metadata
     };
     player.load(media, { autoplay: opts.autoplay }, function(err) {
@@ -82,25 +76,15 @@ var player = mutate(function(opts) {
   }
 
   var proc = findDevice(options.device, options.ttl)
-    .then(function(service) {
-      return connectClient(service);
-    })
-    .then(function(client) {
-      return launchClient(client);
-    })
-    .then(function(player) {
-      return loadMedia(player, options)
-    });
+    .then(function(service) { return connectClient(service); })
+    .then(function(client) { return launchClient(client); })
+    .then(function(player) { return loadMedia(player, options) });
 
   if (!opts.cb) return proc;
 
   // use the callback provided
-  return proc.then(function(player) {
-      opts.cb(null, player);
-    })
-    .catch(function(err) {
-      opts.cb(err);
-    });
+  return proc.then(function(player) { opts.cb(null, player); })
+              .catch(function(err) { opts.cb(err); });
 });
 
 // create a nice API
