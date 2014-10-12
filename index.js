@@ -23,7 +23,8 @@ var defaults = {
 
 var apirize = function(fn, ctx) {
   return mutate(function(opts) {
-      if (opts._opts) {
+    opts = opts || {}; 
+    if (opts._opts) {
         opts = extend(opts, opts._opts);
         delete opts._opts;
       }
