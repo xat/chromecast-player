@@ -23,7 +23,7 @@ var defaults = {
 
 var apirize = function(fn, ctx) {
   return mutate(function(opts) {
-    opts = opts || {}; 
+    opts = opts || {};
     if (opts._opts) {
         opts = extend(opts, opts._opts);
         delete opts._opts;
@@ -53,6 +53,7 @@ var player = function() {
     var that = this;
     this.mw.run(opts, this, 'launch', function(err, opts) {
       var options = extend(defaults, opts);
+      if (err) return options.cb(err);
       that._scan(options)
         .then(function(address) { return that._connect(address); })
         .then(function(client) { return that._launch(client, options); })
@@ -67,6 +68,7 @@ var player = function() {
     var client;
     this.mw.run(opts, this, 'attach', function(err, opts) {
       var options = extend(defaults, opts);
+      if (err) return options.cb(err);
       that._scan(options)
         .then(function(address) { return that._connect(address); })
         .then(function(cli) { client = cli; return that._find(cli, options); })
