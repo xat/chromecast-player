@@ -177,4 +177,6 @@ player.prototype._load = function(ctx) {
   });
 };
 
+player.api = api;
+
 module.exports = player;
