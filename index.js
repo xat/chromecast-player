@@ -61,6 +61,7 @@ var player = function() {
         .then(function(ctx) { return that._connect(ctx); })
         .then(function(ctx) { return that._launch(ctx); })
         .then(function(ctx) { return that._load(ctx); })
+        .then(function(ctx) { return that._status(ctx); })
         .then(function(ctx) { ctx.options.cb(null, ctx.player, ctx); },
               function(err) { ctx.options.cb(err); });
     });
