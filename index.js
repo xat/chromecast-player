@@ -79,6 +79,7 @@ var player = function() {
         .then(function(ctx) { return that._connect(ctx); })
         .then(function(ctx) { return that._find(ctx); })
         .then(function(ctx) { return that._join(ctx); })
+        .then(function(ctx) { return that._status(ctx); })
         .then(function(ctx) { ctx.options.cb(null, ctx.player, ctx); },
               function(err) { ctx.options.cb(err); });
     });
@@ -142,6 +143,16 @@ player.prototype._join = function(ctx) {
         resolve(ctx);
       }
     );
+  });
+};
+
+// fetch the current state of the player
+player.prototype._status = function(ctx) {
+  return new Promise(function(resolve, reject) {
+    ctx.player.getStatus(function(err) {
+      if (err) return reject(err);
+      resolve(ctx);
+    });
   });
 };
 
