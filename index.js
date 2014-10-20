@@ -174,7 +174,7 @@ player.prototype._launch = function(ctx) {
       if (err) return reject(err);
       ctx.player = p;
       ctx.player.on('status', function(status) {
-        that._setStatus(ctx, status);
+        that._setStatus(ctx, status.playerState.toLowerCase());
       });
       resolve(ctx);
     });
@@ -190,7 +190,7 @@ player.prototype._load = function(ctx) {
       if (err) return reject(err);
       that._setStatus(ctx, 'ready');
       ctx.player.on('status', function(status) {
-        that._setStatus(ctx, status);
+        that._setStatus(ctx, status.playerState.toLowerCase());
       });
       resolve(ctx);
     });
