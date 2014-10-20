@@ -149,6 +149,9 @@ player.prototype._join = function(ctx) {
         if (err) return reject(err);
         that._setStatus(ctx, 'ready');
         ctx.player = p;
+        ctx.player.on('status', function(status) {
+          that._setStatus(ctx, status.playerState.toLowerCase());
+        });
         resolve(ctx);
       }
     );
@@ -173,9 +176,6 @@ player.prototype._launch = function(ctx) {
     ctx.client.launch(ctx.api, function(err, p) {
       if (err) return reject(err);
       ctx.player = p;
-      ctx.player.on('status', function(status) {
-        that._setStatus(ctx, status.playerState.toLowerCase());
-      });
       resolve(ctx);
     });
   });
