@@ -141,6 +141,7 @@ player.prototype._find = function(ctx) {
 
 // join an existing chromecast session
 player.prototype._join = function(ctx) {
+  var that = this;
   this._setStatus(ctx, 'joining');
   return new Promise(function(resolve, reject) {
     ctx.client.join(ctx.session, ctx.api,
@@ -166,6 +167,7 @@ player.prototype._status = function(ctx) {
 
 // launch an application
 player.prototype._launch = function(ctx) {
+  var that = this;
   this._setStatus(ctx, 'launching');
   return new Promise(function(resolve, reject) {
     ctx.client.launch(ctx.api, function(err, p) {
