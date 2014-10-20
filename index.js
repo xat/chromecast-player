@@ -57,6 +57,7 @@ var player = function() {
     this.mw.run(ctx, function(err, ctx) {
       ctx.options = extend(defaults, ctx.options);
       if (err) return ctx.options.cb(err);
+      that._setStatus(ctx, 'loading plugins');
       that._scan(ctx)
         .then(function(ctx) { return that._connect(ctx); })
         .then(function(ctx) { return that._launch(ctx); })
@@ -70,9 +71,10 @@ var player = function() {
   this.attach = apirize(function(opts) {
     var that = this;
     var ctx = new ee();
-    ctx.mode = 'launch';
+    ctx.mode = 'attach';
     ctx.options = opts;
     ctx.api = api;
+    that._setStatus(ctx, 'loading plugins');
     this.mw.run(ctx, function(err, opts) {
       ctx.options = extend(defaults, ctx.options);
       if (err) return options.cb(err);
@@ -93,6 +95,7 @@ inherits(player, ee);
 // either return the first found or the one
 // which matches device.
 player.prototype._scan = function(ctx) {
+  this._setStatus(ctx, 'scanning');
   return new Promise(function(resolve, reject) {
     if (ctx.options.address) {
       ctx.address = ctx.options.address;
@@ -110,6 +113,7 @@ player.prototype._scan = function(ctx) {
 
 // establish a connection to a chromecast device
 player.prototype._connect = function(ctx) {
+  this._setStatus(ctx, 'connecting');
   return new Promise(function(resolve, reject) {
     var client = new Client();
     client.connect(ctx.address, function() {
@@ -124,6 +128,7 @@ player.prototype._connect = function(ctx) {
 
 // find running app
 player.prototype._find = function(ctx) {
+  this._setStatus(ctx, 'finding');
   return new Promise(function(resolve, reject) {
     ctx.client.getSessions(function(err, apps) {
       if (err) return reject(err);
@@ -136,10 +141,12 @@ player.prototype._find = function(ctx) {
 
 // join an existing chromecast session
 player.prototype._join = function(ctx) {
+  this._setStatus(ctx, 'joining');
   return new Promise(function(resolve, reject) {
     ctx.client.join(ctx.session, ctx.api,
       function(err, p) {
         if (err) return reject(err);
+        that._setStatus(ctx, 'ready');
         ctx.player = p;
         resolve(ctx);
       }
@@ -159,10 +166,14 @@ player.prototype._status = function(ctx) {
 
 // launch an application
 player.prototype._launch = function(ctx) {
+  this._setStatus(ctx, 'launching');
   return new Promise(function(resolve, reject) {
     ctx.client.launch(ctx.api, function(err, p) {
       if (err) return reject(err);
       ctx.player = p;
+      ctx.player.on('status', function(status) {
+        that._setStatus(ctx, status);
+      });
       resolve(ctx);
     });
   });
@@ -170,12 +181,23 @@ player.prototype._launch = function(ctx) {
 
 // load a media file
 player.prototype._load = function(ctx) {
+  var that = this;
+  this._setStatus(ctx, 'loading');
   return new Promise(function(resolve, reject) {
     ctx.player.load(ctx.options, function(err) {
       if (err) return reject(err);
+      that._setStatus(ctx, 'ready');
+      ctx.player.on('status', function(status) {
+        that._setStatus(ctx, status);
+      });
       resolve(ctx);
     });
   });
+};
+
+player.prototype._setStatus = function(ctx, status) {
+  ctx.status = status;
+  ctx.emit('status', status);
 };
 
 player.api = api;
