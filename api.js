@@ -94,6 +94,12 @@ Api.prototype.sessionRequest = function(data, cb) {
   });
 };
 
+// create a back-reference to the platform
+// needed for some api methods.
+Api.prototype.setPlatform = function(platform) {
+  this.platform = platform;
+};
+
 Api.prototype.play = function(cb) {
   this.sessionRequest({ type: 'PLAY' }, cb);
 };
@@ -106,11 +112,31 @@ Api.prototype.stop = function(cb) {
   this.sessionRequest({ type: 'STOP' }, cb);
 };
 
-Api.prototype.volume = function(volume, cb) {
-  this.sessionRequest({
-    type: 'VOLUME',
-    Volume: volume
-  }, cb);
+// volume can be a number between 0 and 1
+Api.prototype.setVolume = function(volume, cb) {
+  this.platform.setVolume(volume, cb || noop);
+};
+
+Api.prototype.getVolume = function(cb) {
+  this.platform.getVolume(cb || noop);
+};
+
+Api.prototype.mute = function(cb) {
+  this.platform.receiver.request({
+    type: 'SET_VOLUME',
+    volume: {
+      muted: true
+    }
+  }, cb || noop);
+};
+
+Api.prototype.unmute = function(cb) {
+  this.platform.receiver.request({
+    type: 'SET_VOLUME',
+    volume: {
+      muted: false
+    }
+  }, cb || noop);
 };
 
 Api.prototype.seek = function(currentTime, cb) {

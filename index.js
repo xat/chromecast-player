@@ -147,6 +147,7 @@ player.prototype._join = function(ctx) {
     ctx.client.join(ctx.session, ctx.api,
       function(err, p) {
         if (err) return reject(err);
+        if (p.setPlatform) p.setPlatform(ctx.client);
         that._setStatus(ctx, 'ready');
         ctx.player = p;
         ctx.player.on('status', function(status) {
@@ -175,6 +176,7 @@ player.prototype._launch = function(ctx) {
   return new Promise(function(resolve, reject) {
     ctx.client.launch(ctx.api, function(err, p) {
       if (err) return reject(err);
+      if (p.setPlatform) p.setPlatform(ctx.client);
       ctx.player = p;
       resolve(ctx);
     });
