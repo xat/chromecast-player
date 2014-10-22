@@ -46,6 +46,10 @@ Api.prototype.getStatus = function(cb) {
   );
 };
 
+Api.prototype.updateStatus = function(cb) {
+  this.getStatus(cb || noop);
+};
+
 Api.prototype.load = function(opts, cb) {
   var options = {
     type: 'LOAD',
