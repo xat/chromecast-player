@@ -11,7 +11,6 @@
   "dependencies": {
     "castv2-client": "0.0.7",
     "chromecast-scanner": "0.0.1",
-    "events": "^1.0.2",
     "mutate.js": "^0.2.0",
     "promiscuous": "^0.6.0",
     "ware": "^1.2.0",
