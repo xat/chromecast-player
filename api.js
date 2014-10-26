@@ -3,6 +3,7 @@ var inherits = require('util').inherits;
 var Application = castv2Cli.Application;
 var RequestResponseController = castv2Cli.RequestResponseController;
 var extend = require('xtend');
+var timelineHelper = require('./timelineHelper');
 var noop = function() {};
 var slice = Array.prototype.slice;
 
@@ -28,6 +29,14 @@ var Api = function(client, session) {
 
   this.reqres.on('message', onMessage);
   this.reqres.once('close', onClose);
+
+  this.tlHelper = timelineHelper(this);
+
+  var onPosition = function(pos) {
+    that.emit('position', pos);
+  };
+
+  this.tlHelper.on('position', onPosition);
 };
 
 Api.APP_ID = 'CC1AD845';
@@ -148,6 +157,14 @@ Api.prototype.seek = function(currentTime, cb) {
     type: 'SEEK',
     currentTime: currentTime
   }, cb);
+};
+
+Api.prototype.getPosition = function() {
+  return this.tlHelper.getPosition();
+};
+
+Api.prototype.getProgress = function() {
+  return this.tlHelper.getProgress();
 };
 
 module.exports = Api;
