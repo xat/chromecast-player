@@ -161,8 +161,9 @@ player.prototype._join = function(ctx) {
 
 // fetch the current state of the player
 player.prototype._status = function(ctx) {
+  var that = this;
   return new Promise(function(resolve, reject) {
-    ctx.player.getStatus(function(err) {
+    ctx.player.updateStatus(function(err) {
       if (err) return reject(err);
       resolve(ctx);
     });

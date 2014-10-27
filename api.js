@@ -56,7 +56,14 @@ Api.prototype.getStatus = function(cb) {
 };
 
 Api.prototype.updateStatus = function(cb) {
-  this.getStatus(cb || noop);
+  var that = this;
+  cb = cb || noop;
+  this.getStatus(function(err, status) {
+    if (err) return;
+    that.emit(status.playerState.toLowerCase(), status);
+    that.emit('status', status);
+    cb(err, status);
+  });
 };
 
 Api.prototype.load = function(opts, cb) {
@@ -140,13 +147,6 @@ Api.prototype.mute = function(cb) {
 
 Api.prototype.unmute = function(cb) {
   this.platform.setVolume({ muted: false }, cb || noop);
-};
-
-Api.prototype.seek = function(currentTime, cb) {
-  this.sessionRequest({
-    type: 'SEEK',
-    currentTime: currentTime
-  }, cb);
 };
 
 Api.prototype.getPosition = function() {
