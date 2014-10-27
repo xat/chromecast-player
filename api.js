@@ -132,6 +132,13 @@ Api.prototype.stop = function(cb) {
   this.sessionRequest({ type: 'STOP' }, cb);
 };
 
+Api.prototype.seek = function(currentTime, cb) {
+  this.sessionRequest({
+    type: 'SEEK',
+    currentTime: currentTime
+  }, cb);
+};
+
 // volume can be a number between 0 and 1
 Api.prototype.setVolume = function(volume, cb) {
   this.platform.setVolume({ level: volume }, cb || noop);
@@ -156,5 +163,7 @@ Api.prototype.getPosition = function() {
 Api.prototype.getProgress = function() {
   return this.tlHelper.getProgress();
 };
+
+
 
 module.exports = Api;
