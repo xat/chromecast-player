@@ -9,7 +9,7 @@
   "author": "Simon Kusterer",
   "license": "MIT",
   "dependencies": {
-    "castv2-client": "0.0.7",
+    "castv2-client": "0.0.8",
     "chromecast-scanner": "0.0.1",
     "mutate.js": "^0.2.0",
     "promiscuous": "^0.6.0",

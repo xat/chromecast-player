@@ -127,7 +127,7 @@ Api.prototype.stop = function(cb) {
 
 // volume can be a number between 0 and 1
 Api.prototype.setVolume = function(volume, cb) {
-  this.platform.setVolume(volume, cb || noop);
+  this.platform.setVolume({ level: volume }, cb || noop);
 };
 
 Api.prototype.getVolume = function(cb) {
@@ -135,21 +135,11 @@ Api.prototype.getVolume = function(cb) {
 };
 
 Api.prototype.mute = function(cb) {
-  this.platform.receiver.request({
-    type: 'SET_VOLUME',
-    volume: {
-      muted: true
-    }
-  }, cb || noop);
+  this.platform.setVolume({ muted: true }, cb || noop);
 };
 
 Api.prototype.unmute = function(cb) {
-  this.platform.receiver.request({
-    type: 'SET_VOLUME',
-    volume: {
-      muted: false
-    }
-  }, cb || noop);
+  this.platform.setVolume({ muted: false }, cb || noop);
 };
 
 Api.prototype.seek = function(currentTime, cb) {

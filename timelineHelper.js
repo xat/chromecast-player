@@ -2,12 +2,12 @@ var timeline = require('time-line');
 var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
 
-var TimelineHelper = function(p) {
+var TimelineHelper = function(p, freq) {
   if (!(this instanceof TimelineHelper)) return new TimelineHelper(p);
   this.p = p;
   this.len = 0;
   this.timelineSupported = false;
-  this.tl = timeline(this.len, 250);
+  this.tl = timeline(this.len, freq || 250);
   this.p.on('status', this._updatePosition.bind(this));
   this.tl.on('position', function(pos) {
     if (isNaN(pos.percent)) return;
