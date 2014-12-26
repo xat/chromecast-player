@@ -23,7 +23,7 @@ var Api = function(client, session) {
   };
 
   var onClose = function() {
-    that.removeListener('message', onMessage);
+    that.reqres.removeListener('message', onMessage);
     that.stop();
   };
 
