@@ -59,9 +59,10 @@ Api.prototype.updateStatus = function(cb) {
   var that = this;
   cb = cb || noop;
   this.getStatus(function(err, status) {
-    if (err) return;
-    that.emit(status.playerState.toLowerCase(), status);
-    that.emit('status', status);
+    if (status) {
+      that.emit(status.playerState.toLowerCase(), status);
+      that.emit('status', status);
+    }
     cb(err, status);
   });
 };
