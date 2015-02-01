@@ -1,6 +1,6 @@
 {
   "name": "chromecast-player",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "simple chromecast player",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "castv2-client": "0.0.8",
-    "chromecast-scanner": "0.1.0",
+    "chromecast-scanner": "0.2.0",
     "mutate.js": "^0.2.0",
     "promiscuous": "^0.6.0",
     "time-line": "^1.0.1",

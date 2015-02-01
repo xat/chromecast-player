@@ -14,6 +14,7 @@ var defaults = {
   autoplay: true,
   ttl: 10000,
   startTime: 0,
+  scanType: 'mdns',
   streamType: 'BUFFERED',
   activeTrackIds: [],
   media: {},
@@ -101,7 +102,11 @@ player.prototype._scan = function(ctx) {
       ctx.address = ctx.options.address;
       return resolve(ctx);
     }
-    scanner({ device: ctx.options.device, ttl: ctx.options.ttl },
+    scanner({
+        device: ctx.options.device,
+        ttl: ctx.options.ttl,
+        type: ctx.options.scanType
+      },
       function(err, service) {
         if (err) return reject(err);
         ctx.address = service.address;
