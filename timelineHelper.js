@@ -1,5 +1,6 @@
 var timeline = require('time-line');
 var inherits = require('util').inherits;
+var debug = require('debug')('chromecast-player:timelineHelper');
 var EventEmitter = require('events').EventEmitter;
 
 var TimelineHelper = function(p) {
@@ -8,12 +9,29 @@ var TimelineHelper = function(p) {
   this.len = 0;
   this.timelineSupported = false;
   this.tl = timeline(this.len, 250);
-  this.p.on('status', this._updatePosition.bind(this));
-  this.tl.on('position', function(pos) {
+
+  var onStatus = this._updatePosition.bind(this);
+
+  var onPosition = function(pos) {
     if (isNaN(pos.percent)) return;
     this.emit('position', pos);
-  }.bind(this));
-  this.p.on('playing', this.update.bind(this));
+  }.bind(this);
+
+  var onPlaying = this.update.bind(this);
+
+  var onClosed = function() {
+    debug('timelineHelper closed');
+    this.p.removeListener('status', onStatus);
+    this.tl.removeListener('position', onPosition);
+    this.p.removeListener('playing', onPlaying);
+    this.p.removeListener('closed', onClosed);
+    this.tl._clear();
+  }.bind(this);
+
+  this.p.on('status', onStatus);
+  this.tl.on('position', onPosition);
+  this.p.on('playing', onPlaying);
+  this.p.on('closed', onClosed);
 };
 
 inherits(TimelineHelper, EventEmitter);

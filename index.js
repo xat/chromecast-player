@@ -5,6 +5,7 @@ var mutate = require('mutate.js');
 var inherits = require('util').inherits;
 var ee = require('events').EventEmitter;
 var extend = require('xtend');
+var debug = require('debug')('chromecast-player');
 var Promise = require('promiscuous');
 var api = require('./api');
 var noop = function() {};
@@ -14,7 +15,6 @@ var defaults = {
   autoplay: true,
   ttl: 10000,
   startTime: 0,
-  scanType: 'mdns',
   streamType: 'BUFFERED',
   activeTrackIds: [],
   media: {},
@@ -43,6 +43,20 @@ var apirize = function(fn, ctx) {
     .close();
 };
 
+var shutdown = function() {
+  debug('shutdown');
+  if (this.client && !this.clientClosed) {
+    this.client.close();
+    this.clientClosed = true;
+  }
+  if (this.player && !this.playerClosed) {
+    this.player.close();
+    this.playerClosed = true;
+  }
+  this.inst._setStatus(this, 'closed');
+  this.emit('closed');
+};
+
 var player = function() {
   if (!(this instanceof player)) return new player();
   ee.call(this);
@@ -55,6 +69,8 @@ var player = function() {
     ctx.mode = 'launch';
     ctx.options = opts;
     ctx.api = api;
+    ctx.shutdown = shutdown;
+    ctx.inst = this;
     this.mw.run(ctx, function(err, ctx) {
       ctx.options = extend(defaults, ctx.options);
       if (err) return ctx.options.cb(err);
@@ -75,6 +91,8 @@ var player = function() {
     ctx.mode = 'attach';
     ctx.options = opts;
     ctx.api = api;
+    ctx.shutdown = shutdown;
+    ctx.inst = this;
     that._setStatus(ctx, 'loading plugins');
     this.mw.run(ctx, function(err, opts) {
       ctx.options = extend(defaults, ctx.options);
@@ -103,13 +121,12 @@ player.prototype._scan = function(ctx) {
       return resolve(ctx);
     }
     scanner({
-        device: ctx.options.device,
+        name: ctx.options.device ? ctx.options.device + '.local' : null,
         ttl: ctx.options.ttl,
-        type: ctx.options.scanType
       },
       function(err, service) {
         if (err) return reject(err);
-        ctx.address = service.address;
+        ctx.address = service.data;
         resolve(ctx);
       }
     );
@@ -125,9 +142,19 @@ player.prototype._connect = function(ctx) {
       ctx.client = client;
       resolve(ctx);
     });
-    client.on('error', function() {
-      client.close();
-    });
+    var onError = function(err) {
+      debug('client error %o', err);
+      client.removeListener('error', onError);
+      ctx.shutdown();
+    };
+    var onClose = function() {
+      debug('client onClose');
+      client.client.removeListener('close', onClose);
+      client.removeListener('error', onError);
+      ctx.clientClosed = true;
+    };
+    client.client.on('close', onClose);
+    client.on('error', onError);
   });
 };
 
@@ -155,9 +182,18 @@ player.prototype._join = function(ctx) {
         if (p.setPlatform) p.setPlatform(ctx.client);
         that._setStatus(ctx, 'ready');
         ctx.player = p;
-        ctx.player.on('status', function(status) {
+        var onStatus = function(status) {
           that._setStatus(ctx, status.playerState.toLowerCase());
-        });
+        };
+        var onClosed = function() {
+          debug('_join player onClosed');
+          ctx.player.removeListener('status', onStatus);
+          ctx.player.removeListener('closed', onClosed);
+          ctx.playerClosed = true;
+          ctx.shutdown();
+        };
+        ctx.player.on('status', onStatus);
+        ctx.player.on('closed', onClosed);
         resolve(ctx);
       }
     );
@@ -197,9 +233,18 @@ player.prototype._load = function(ctx) {
     ctx.player.load(ctx.options, function(err) {
       if (err) return reject(err);
       that._setStatus(ctx, 'ready');
-      ctx.player.on('status', function(status) {
+      var onStatus = function(status) {
         that._setStatus(ctx, status.playerState.toLowerCase());
-      });
+      };
+      var onClosed = function() {
+        debug('_load player onClosed');
+        ctx.player.removeListener('status', onStatus);
+        ctx.player.removeListener('closed', onClosed);
+        ctx.playerClosed = true;
+        ctx.shutdown();
+      };
+      ctx.player.on('status', onStatus);
+      ctx.player.on('closed', onClosed);
       resolve(ctx);
     });
   });

@@ -3,6 +3,7 @@ var inherits = require('util').inherits;
 var Application = castv2Cli.Application;
 var RequestResponseController = castv2Cli.RequestResponseController;
 var extend = require('xtend');
+var debug = require('debug')('chromecast-player:api');
 var timelineHelper = require('./timelineHelper');
 var noop = function() {};
 var slice = Array.prototype.slice;
@@ -23,12 +24,21 @@ var Api = function(client, session) {
   };
 
   var onClose = function() {
+    debug('API close');
     that.reqres.removeListener('message', onMessage);
-    that.stop();
+    that.reqres.removeListener('close', onClose);
+    that.removeListener('close', onClose);
+    if (that.client) {
+      that.client.removeListener('close', onClose);
+    }
+    that.tlHelper.removeListener('position', onPosition);
+    that.emit('closed');
   };
 
   this.reqres.on('message', onMessage);
-  this.reqres.once('close', onClose);
+  this.reqres.on('close', onClose);
+  this.client.on('close', onClose);
+  this.on('close', onClose);
 
   this.tlHelper = timelineHelper(this);
 
@@ -164,7 +174,5 @@ Api.prototype.getPosition = function() {
 Api.prototype.getProgress = function() {
   return this.tlHelper.getProgress();
 };
-
-
 
 module.exports = Api;

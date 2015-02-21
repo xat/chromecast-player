@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "castv2-client": "0.0.8",
-    "chromecast-scanner": "0.3.0",
+    "chromecast-scanner": "^0.4.1",
+    "debug": "^2.1.1",
     "mutate.js": "^0.2.0",
     "promiscuous": "^0.6.0",
     "time-line": "^1.0.1",
