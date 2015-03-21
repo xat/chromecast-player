@@ -15,12 +15,18 @@ var Api = function(client, session) {
     'urn:x-cast:com.google.cast.media');
 
   var onMessage = function(response, broadcast) {
-    if(response.type === 'MEDIA_STATUS' && broadcast) {
-      var status = response.status[0];
-      that.currentSession = status;
-      that.emit(status.playerState.toLowerCase(), status);
-      that.emit('status', status);
+    if (response.type !== 'MEDIA_STATUS' ||
+        !broadcast ||
+        !response.status ||
+        !response.status.length ||
+        !response.status[0]) {
+      return;
     }
+
+    var status = response.status[0];
+    that.currentSession = status;
+    that.emit(status.playerState.toLowerCase(), status);
+    that.emit('status', status);
   };
 
   var onClose = function() {
