@@ -1,6 +1,6 @@
 {
   "name": "chromecast-player",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "simple chromecast player",
   "main": "index.js",
   "scripts": {
