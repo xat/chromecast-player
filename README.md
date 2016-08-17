@@ -1,6 +1,6 @@
 # chromecast-player
 
-simple chromecast player.
+A simple chromecast player.
 Relies on the [castv2-client](https://github.com/thibauts/node-castv2-client) lib
 from thibauts, all credits go to him.
 
@@ -8,11 +8,12 @@ from thibauts, all credits go to him.
 
 Start Playback of some video file:
 
-```javascript
-var player = require('chromecast-player')();
-var media = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/ED_1280.mp4';
-player.launch(media, function(err, p) {
-  p.once('playing', function() {
+```js
+const player = require('chromecast-player')();
+const media = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/ED_1280.mp4';
+
+player.launch(media, (err, p) => {
+  p.once('playing', () => {
     console.log('playback has started.');
   });
 });
@@ -21,15 +22,18 @@ player.launch(media, function(err, p) {
 Attach to a currently playing session:
 
 ```javascript
-var player = require('chromecast-player')();
-player.attach(function(err, p) {
+const player = require('chromecast-player')();
+
+player.attach((err, p) => {
   p.pause();
 });
 ```
 
 ### Installation
 
-`npm install chromecast-player`
+```bash
+npm install chromecast-player --save
+```
 
 ## License
 Copyright (c) 2014 Simon Kusterer
