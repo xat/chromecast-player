@@ -96,7 +96,7 @@ var player = function() {
     that._setStatus(ctx, 'loading plugins');
     this.mw.run(ctx, function(err, opts) {
       ctx.options = extend(defaults, ctx.options);
-      if (err) return options.cb(err);
+      if (err) return ctx.options.cb(err);
       that._scan(ctx)
         .then(function(ctx) { return that._connect(ctx); })
         .then(function(ctx) { return that._find(ctx); })
