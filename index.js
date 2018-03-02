@@ -160,13 +160,18 @@ player.prototype._connect = function(ctx) {
 
 // find running app
 player.prototype._find = function(ctx) {
+  var that = this;
   this._setStatus(ctx, 'finding');
   return new Promise(function(resolve, reject) {
     ctx.client.getSessions(function(err, apps) {
       if (err) return reject(err);
-      if (!apps.length) return reject(new Error('app not found'));
-      ctx.session = apps[0];
-      resolve(ctx);
+      if (apps.length) {
+        ctx.session = apps[0];
+        resolve(ctx);
+      } else {
+        that.emit("error", "app not found");
+        reject("app not found");
+      }
     });
   });
 };
